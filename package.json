@@ -1,0 +1,30 @@
+{
+    "name": "tmd"
+  , "version": "0.0.1"
+  , "author": "Yuest Wang <yuestwang@gmail.com> (http://yue.st)"
+  , "description": "a tool for templating your markdown files"
+  , "keyword": ["template", "blog", "static site generator"]
+  , "homepage": "http://github.com/yuest/tmd"
+  , "bug": {
+        "url": "http://github.com/yuest/tmd/issues"
+      , "email": "yuestwang@gmail.com"
+    }
+  , "files": ["app.js", "cli.js", "utils.js", "config.sample.js"]
+  , "repository" : {
+        "type" : "git"
+      , "url" : "http://github.com/yuest/jsdev.git"
+    }
+  , "dependencies": {
+        "connect": "2.0.x"
+      , "mkdirp": "=0.3.0"
+      , "express": "https://github.com/visionmedia/express/tarball/master"
+      , "consolidate": ">=0.0.1"
+      , "jade": ">=0.0.1"
+      , "stylus": ">=0.0.1"
+      , "showdown": ">=0.0.1"
+    }
+  , "main": "./app.js"
+  , "bin": {
+        "tmd": "./cli.js"
+    }
+}
