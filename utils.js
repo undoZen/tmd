@@ -63,7 +63,7 @@ exports.dirs_files = function dirs_files(dir, callback) {
 exports.files = function (dir, callback) {
   var that = this
   exports.dirs_files(dir, function(err, df) {
-    callback.apply(that, [err, df.files])
+    callback.apply(that, [err, (df || {}).files])
   })
 }
 

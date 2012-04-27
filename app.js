@@ -51,7 +51,7 @@ function mdengine(path, options, fn) {
         }
       }))
     } else {
-      return fn(e)
+      return fn(new Error('no souch file: ' + path))
     }
   })
 }
@@ -67,7 +67,7 @@ app.renderDoc = function(view, fn) {
 }
 
 express.response.renderDoc = function(view) {
-  app.renderDoc(view, errfn(this.req.next, this.send.bind(this)))
+  app.renderDoc(view, errfn(this.req.next, this.end.bind(this)))
 }
 
 exports.generate = function () {
