@@ -106,6 +106,7 @@ exports.server = function () {
     .use(require('stylus').middleware({ src: resolve(process.cwd()) }))
     .use('/static', express['static'](staDir))
     .use(app.router)
+    .use(express['static'](outDir))
 
   app.get('/', function(req, res, next) {
     res.redirect('/index.html')
