@@ -7,11 +7,12 @@ var express = require('express')
   , basename = require('path').basename
   , exists = require('path').exists
   , existsSync = require('path').existsSync
-  , showdown = (new (require('showdown').Showdown.converter)).makeHtml
+  , Showdown = require('showdown')
+  , showdown = (new Showdown.converter).makeHtml
   , config = require('./utils').config
   , files = require('./utils').files
   , mkdirp = require('mkdirp')
-
+console.log(config);
 var app = exports = module.exports = express()
   , srcDir = config.source
   , tplDir = config.template
@@ -62,7 +63,12 @@ app.engine('.markdown', mdengine)
 app.renderDoc = function(view, fn) {
   view = join(srcDir, view)
   app.render(view, errfn(function(err) { console.error(err) }, function(document) {
-    app.render('document', { document: document }, fn)
+    var title = document.match(/<h1[^>]*>(.+?)<\/h1>/i);
+    title = (title ? title[0] + ' - ' : '') + config.site.name;
+    app.render('document', {
+      title: title,
+      document: document
+    }, fn)
   }))
 }
 
@@ -99,12 +105,13 @@ exports.server = function () {
     .use(app.router)
     .use(require('stylus').middleware({ src: resolve(process.cwd()) }))
     .use('/static', express['static'](staDir))
+    .use(app.router)
 
   app.get('/', function(req, res, next) {
     res.redirect('/index.html')
   })
-  app.get(/\.html$/i, function(req, res, next) {
-    res.renderDoc(req.path.replace(/html$/i, 'md'))
+  app.use(function(req, res, next) {
+    res.renderDoc(req.path.replace(/(\.html)?$/i, '.md'))
   })
 
   app.listen(3456)
