@@ -94,3 +94,13 @@ exports.__defineGetter__('config', function() {
   config.engine = config.engine || 'jade'
   return config
 })
+
+exports.extend = function (obj) {
+  if (!obj) return {};
+  Array.prototype.slice.call(arguments, 1).forEach(function (eo) {
+    Object.keys(eo).forEach(function (k) {
+      obj[k] = eo[k];
+    });
+  });
+  return obj;
+}

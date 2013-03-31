@@ -9,8 +9,10 @@ var express = require('express')
   , existsSync = require('path').existsSync
   , Showdown = require('showdown')
   , showdown = (new Showdown.converter).makeHtml
-  , config = require('./utils').config
-  , files = require('./utils').files
+  , utils = require('./utils')
+  , config = utils.config
+  , files = utils.files
+  , extend = utils.extend
   , mkdirp = require('mkdirp')
 console.log(config);
 var app = exports = module.exports = express()
@@ -60,20 +62,20 @@ app.engine('.md', mdengine)
 app.engine('.mkd', mdengine)
 app.engine('.markdown', mdengine)
 
-app.renderDoc = function(view, fn) {
+app.renderDoc = function(view, fn, locals) {
   view = join(srcDir, view)
   app.render(view, errfn(function(err) { console.error(err) }, function(document) {
     var title = document.match(/<h1[^>]*>(.+?)<\/h1>/i);
-    title = (title ? title[0] + ' - ' : '') + config.site.name;
-    app.render('document', {
+    title = (title ? title[1] + ' - ' : '') + config.site.name;
+    app.render('document', extend({
       title: title,
       document: document
-    }, fn)
+    }, config.locals || {}, locals), fn)
   }))
 }
 
-express.response.renderDoc = function(view) {
-  app.renderDoc(view, errfn(this.req.next, this.end.bind(this)))
+express.response.renderDoc = function(view, locals) {
+  app.renderDoc(view, errfn(this.req.next, this.end.bind(this)), locals);
 }
 
 exports.generate = function () {
@@ -112,7 +114,7 @@ exports.server = function () {
     res.redirect('/index.html')
   })
   app.use(function(req, res, next) {
-    res.renderDoc(req.path.replace(/(\.html)?$/i, '.md'))
+    res.renderDoc(req.path.replace(/(\.html)?$/i, '.md'), { req_query: req.query })
   })
 
   app.listen(3456)
